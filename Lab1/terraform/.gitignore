@@ -1,0 +1,21 @@
+# Bỏ các file nhạy cảm hoặc cấu hình cục bộ
+.env
+
+# Bỏ các file trạng thái Terraform
+*.tfstate
+*.tfstate.*
+*.backup
+
+# Bỏ file lock nếu không cần chia sẻ lock state
+.terraform.lock.hcl
+
+# Bỏ thư mục plugin Terraform tải về
+.terraform/
+
+# MacOS or editor-specific
+.DS_Store
+.vscode/
+admin_credentials.csv
+admin_accessKeys.csv
+lab1-key.pem
+# Bỏ file nhạy cảm hoặc cấu hình cục bộ
