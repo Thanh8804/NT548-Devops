@@ -1,0 +1,52 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: EC2 Instances Stack for public and private subnets.
+
+Parameters:
+  PublicSubnetId:
+    Type: String
+  PrivateSubnetId:
+    Type: String
+  PublicSecurityGroupId:
+    Type: String
+  PrivateSecurityGroupId:
+    Type: String
+  NatGatewayId:  # Add this parameter
+    Type: String
+
+Resources:
+  PublicEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      KeyName: lab1-key
+      ImageId: ami-0c02fb55956c7d316
+      SubnetId: !Ref PublicSubnetId
+      SecurityGroupIds:
+        - !Ref PublicSecurityGroupId
+      UserData: !Base64 |
+        #!/bin/bash
+        yum update -y
+        yum install -y httpd
+        systemctl start httpd
+        systemctl enable httpd
+        echo "<html><body><h1>Public EC2 Instance</h1></body></html>" > /var/www/html/index.html
+      Tags:
+      - Key: Name
+        Value: Lab1-PublicEC2Instance
+
+  PrivateEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      KeyName: lab1-key
+      ImageId: ami-0c02fb55956c7d316
+      SubnetId: !Ref PrivateSubnetId
+      SecurityGroupIds:
+        - !Ref PrivateSecurityGroupId
+      UserData: !Base64 |
+        #!/bin/bash
+        yum update -y
+        echo "<html><body><h1>Private EC2 Instance</h1></body></html>" > /tmp/private_ec2.html
+      Tags:
+      - Key: Name
+        Value: Lab1-PrivateEC2Instance

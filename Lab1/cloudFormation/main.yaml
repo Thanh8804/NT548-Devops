@@ -1,0 +1,45 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Root stack for deploying infrastructure with nested stacks.
+
+Resources:
+  VPCStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://s3.amazonaws.com/lab1-cloudformation/vpc/vpc.yaml
+      Parameters:
+        VpcCidr: 10.0.0.0/16
+
+  RouteTableStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://s3.amazonaws.com/lab1-cloudformation/route-tables/route-tables.yaml
+      Parameters:
+        VpcId: !GetAtt VPCStack.Outputs.VpcId
+        PublicSubnetId: !GetAtt VPCStack.Outputs.PublicSubnetId
+        PrivateSubnetId: !GetAtt VPCStack.Outputs.PrivateSubnetId
+        InternetGatewayId: !GetAtt VPCStack.Outputs.InternetGatewayId
+
+  NatGatewayStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://s3.amazonaws.com/lab1-cloudformation/nat-gateway/nat-gateway.yaml
+      Parameters:
+        PublicSubnetId: !GetAtt VPCStack.Outputs.PublicSubnetId
+
+  SecurityGroupStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://s3.amazonaws.com/lab1-cloudformation/security-groups/security-groups.yaml
+      Parameters:
+        VpcId: !GetAtt VPCStack.Outputs.VpcId
+
+  EC2Stack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://s3.amazonaws.com/lab1-cloudformation/ec2/ec2.yaml
+      Parameters:
+        PublicSubnetId: !GetAtt VPCStack.Outputs.PublicSubnetId
+        PrivateSubnetId: !GetAtt VPCStack.Outputs.PrivateSubnetId
+        PublicSecurityGroupId: !GetAtt SecurityGroupStack.Outputs.PublicSecurityGroupId
+        PrivateSecurityGroupId: !GetAtt SecurityGroupStack.Outputs.PrivateSecurityGroupId
+        NatGatewayId: !GetAtt NatGatewayStack.Outputs.NatGatewayId
