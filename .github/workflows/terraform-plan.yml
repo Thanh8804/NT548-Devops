@@ -47,3 +47,8 @@ jobs:
       - name: Terraform Plan
         run: terraform plan
         working-directory: ./Lab2/terraform
+  
+      - name: Terraform Apply
+        if: github.event_name == 'push'
+        run: terraform apply -auto-approve tfplan || exit 1
+        working-directory: ./Lab2/terraform
