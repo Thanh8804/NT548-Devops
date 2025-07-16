@@ -1,0 +1,5 @@
+project:
+  name: nhom16-cloudformation-tests
+  regions:
+    - us-east-1
+  template: main.yml  
